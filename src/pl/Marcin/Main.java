@@ -15,10 +15,18 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
+
 try(FileOutputStream binFile = new FileOutputStream("data.dat");
     FileChannel binChannel = binFile.getChannel()){
 
     ByteBuffer buffer = ByteBuffer.allocate(100);
+    //chained version:
+//    byte[] outputBytes = "Hello World!".getBytes();
+//    byte[] outputBytes2= "Nice to meet You".getBytes();
+//    buffer.put(outputBytes).putInt(245).putInt(-98765).put(outputBytes2).putInt(1000);
+//    buffer.flip();
+
+//unchained version:
     byte[] outputBytes = "Hello World!".getBytes();
     buffer.put(outputBytes);
     buffer.putInt(245);
@@ -27,7 +35,34 @@ try(FileOutputStream binFile = new FileOutputStream("data.dat");
     buffer.put(outputBytes2);
     buffer.putInt(1000);
     buffer.flip();
-    binChannel.write(buffer);
+
+    binChannel.write(buffer);//writting all previous data from buffer in one shot
+//    reading from data.dat
+
+
+
+
+
+    RandomAccessFile ra = new RandomAccessFile("data.dat","rwd");
+    FileChannel channel = ra.getChannel();
+    ByteBuffer readBuffer = ByteBuffer.allocate(100);
+    channel.read(readBuffer);
+    readBuffer.flip();
+//    System.out.println("out lenght = " + outputBytes.length);
+//    System.out.println("out lenght = " + outputBytes2.length);
+
+    byte[] inputString = new byte[outputBytes.length];
+    readBuffer.get(inputString);
+    System.out.println("InputString = " + new String(inputString));
+    System.out.println("Int1 = " + readBuffer.getInt());
+    System.out.println("Int2 ="+ readBuffer.getInt());
+    byte[] inputString2 = new byte[outputBytes2.length];
+    readBuffer.get(inputString2);
+    System.out.println("InputString2 = " + new String(inputString2));
+    System.out.println("int3 =" + readBuffer.getInt());
+
+
+
 
 
 
