@@ -28,11 +28,15 @@ try(FileOutputStream binFile = new FileOutputStream("data.dat");
 
 //unchained version:
     byte[] outputBytes = "Hello World!".getBytes();
+
     buffer.put(outputBytes);
+    long int1Pos = outputBytes.length;
     buffer.putInt(245);
+    long int2Pos = int1Pos + Integer.BYTES;
     buffer.putInt(-98765);
     byte[] outputBytes2= "Nice to meet You".getBytes();
     buffer.put(outputBytes2);
+    long int3Pos = int2Pos + Integer.BYTES + outputBytes2.length;
     buffer.putInt(1000);
     buffer.flip();
 
@@ -45,21 +49,39 @@ try(FileOutputStream binFile = new FileOutputStream("data.dat");
 
     RandomAccessFile ra = new RandomAccessFile("data.dat","rwd");
     FileChannel channel = ra.getChannel();
-    ByteBuffer readBuffer = ByteBuffer.allocate(100);
+    ByteBuffer readBuffer = ByteBuffer.allocate(Integer.BYTES);
+    channel.position(int3Pos);
     channel.read(readBuffer);
     readBuffer.flip();
-//    System.out.println("out lenght = " + outputBytes.length);
-//    System.out.println("out lenght = " + outputBytes2.length);
+    System.out.println("int3 = " + readBuffer.getInt());
 
-    byte[] inputString = new byte[outputBytes.length];
-    readBuffer.get(inputString);
-    System.out.println("InputString = " + new String(inputString));
-    System.out.println("Int1 = " + readBuffer.getInt());
-    System.out.println("Int2 ="+ readBuffer.getInt());
-    byte[] inputString2 = new byte[outputBytes2.length];
-    readBuffer.get(inputString2);
-    System.out.println("InputString2 = " + new String(inputString2));
-    System.out.println("int3 =" + readBuffer.getInt());
+    readBuffer.flip();
+    channel.position(int2Pos);
+    channel.read(readBuffer);
+    readBuffer.flip();
+    System.out.println("int2 = " + readBuffer.getInt());
+
+    readBuffer.flip();
+    channel.position(int1Pos);
+    channel.read(readBuffer);
+    readBuffer.flip();
+    System.out.println("int1 = " + readBuffer.getInt());
+
+
+
+//    ByteBuffer readBuffer = ByteBuffer.allocate(100);
+//    channel.read(readBuffer);
+//    readBuffer.flip();
+
+//    byte[] inputString = new byte[outputBytes.length];
+//    readBuffer.get(inputString);
+//    System.out.println("InputString = " + new String(inputString));
+//    System.out.println("Int1 = " + readBuffer.getInt());
+//    System.out.println("Int2 ="+ readBuffer.getInt());
+//    byte[] inputString2 = new byte[outputBytes2.length];
+//    readBuffer.get(inputString2);
+//    System.out.println("InputString2 = " + new String(inputString2));
+//    System.out.println("int3 =" + readBuffer.getInt());
 
 
 
